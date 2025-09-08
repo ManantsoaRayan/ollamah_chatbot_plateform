@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charlot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="column">
+        <div class="messages_container"></div>
+        <div class="prompt_container">
+            <form method="post" id="prompt_form">
+                <textarea name="prompt" id="prompt"></textarea>
+                <input type="submit" value="Send" disabled>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='marked.esm.js') }}" type="module"></script>
+    <script src="{{ url_for('static', filename='app.js') }}" type="module"></script>
+</body>
+</html>

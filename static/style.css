@@ -1,0 +1,86 @@
+:root {
+    --primary_color: #37353E;
+    --secondary_color:#44444E;
+    --onprimary_color: #D3DAD9;
+    --ternary_color: #715A5A;
+}
+
+*::after, 
+*::before,
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    box-sizing: inherit;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    color: var(--onprimary_color);
+    background-color:var(--primary_color);
+}
+
+.column {
+    height: 90vh;
+    width: 80vw;
+    padding: 50px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .messages_container {
+        height: 80%;
+        width: 100%;
+        padding: 20px;
+        overflow-y: scroll;
+        scrollbar-width: none;
+
+
+        .message {
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px;
+        }
+
+        .incomming {
+            background-color: var(--ternary_color);
+            width: 60%;
+        }
+
+        .outcomming {
+            background-color: var(--secondary_color);
+        }
+    }
+
+    .prompt_container {
+        height: 20%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+
+        
+
+    }
+
+    .prompt_container form {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+
+        textarea {
+            width: 80%;
+        }
+
+        input[type="submit"] {
+            border: none;
+            padding: 10px 8px;
+        }
+    }
+
+}
