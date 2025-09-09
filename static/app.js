@@ -1,21 +1,7 @@
 import { marked } from "./marked.esm.js"
 
-const fetch_message = async (message) => {
-    const post_data = {
-       "message": message 
-    }
-
-    const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(post_data)
-    })
-    const data = await response.json()
-
-    return data
-}
+let current_outcomming_message = null
+let event_source
 
 function create_chats(message, incomming = true) {
     const message_container = document.createElement("div")
@@ -30,19 +16,32 @@ function create_chats(message, incomming = true) {
 const prompt_form = document.getElementById("prompt_form")
 
 prompt_form.onsubmit = async (e) => {
+    // prevent from reloading
     e.preventDefault()
-    const incomming_chat = create_chats(prompt_form.children[0].value)
-
-    const data = await fetch_message()
-    const outcomming_chat = create_chats(data.message, false)
+    const prompt = prompt_form.children[0].value
+    const incomming_chat = create_chats(prompt)
 
     const messages_container = document.querySelector(".messages_container")
-
     messages_container.appendChild(incomming_chat)
-    messages_container.appendChild(outcomming_chat)
 
+    const encoded_prompt = encodeURIComponent(prompt)
+    event_source = new EventSource(`/api/generate?prompt=${encoded_prompt}`)
 
+    current_outcomming_message = create_chats("", false)
+    messages_container.appendChild(current_outcomming_message)
+
+    event_source.onmessage = (e) => {
+        const text = JSON.parse(e.data)
+        current_outcomming_message.innerHTML += text
+    }
+
+    event_source.addEventListener("done", () => {
+        current_outcomming_message.innerHTML = marked.parse(current_outcomming_message.textContent)
+        current_outcomming_message = null
+        event_source.close()
+    })
 }
+
 
 
 const prompt_field = prompt_form.children[0]

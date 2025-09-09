@@ -1,22 +1,36 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, request, Response, stream_with_context
+from ollama import chat
+import json
 
 routes = Blueprint("routes", __name__, static_folder="static")
 
-def fetch_ollama_chat(message: str):
-    pass
 
 @routes.route("/")
 def home(user:str = "rayan"):
     return render_template("index.html", user = user)
 
-@routes.route("/api/generate", methods=["POST"])
+@routes.route("/api/generate", methods=["GET"])
 def api():
-
-    if request.method != "POST":
-        return jsonify({"error 304": "Wrong Method"})
     
-    message = request.form["message"]
+    prompt = request.args.get("prompt", "")
 
-    data = fetch_ollama_chat(message)
+    def generate():
+        # ollama stream
 
-    return jsonify({"message": "Api endpoint"})
+        stream = chat(
+            model="llama3.1:8b",
+            messages=[{"role": "user", "content": prompt}],
+            stream=True
+        )
+
+        for chunk in stream:
+            text = chunk["message"].get("content", "")
+            if text:
+                # send chunk as JSON line (SSE-like)
+                yield f"data: {json.dumps(text)}\n\n"
+
+        yield f"event: done\ndata: [DONE]\n\n"
+
+
+    # Response with text/event-stream so browser can stream
+    return Response(stream_with_context(generate()), content_type="text/event-stream")
