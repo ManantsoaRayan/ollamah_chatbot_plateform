@@ -3,6 +3,33 @@ import { marked } from "./marked.esm.js"
 let current_outcomming_message = null
 let event_source
 
+async function get_session() {
+    try {
+        const response = await fetch("/session/all", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        })
+        return await response.json()
+    }
+    catch (e) {
+        console.log(e)
+        alert("failed to load session. Reload the page")
+    }
+}
+
+window.onload = async () => {
+    const sessions = (await get_session()).body
+    sessions.forEach( (session) => {
+        const session_card = document.createElement("div")
+        session_card.classList.add("nav_item")
+        session_card.textContent = session.session_name
+        session_card.setAttribute("id", session.id.toString())
+
+        document.querySelector(".nav_items").appendChild(session_card)
+    })
+
+};
+
 function create_chats(message, incomming = true) {
     const message_container = document.createElement("div")
     message_container.classList.add(
@@ -44,17 +71,62 @@ prompt_form.onsubmit = async (e) => {
     prompt_form.children[0].value = ""
 }
 
-
+function bind_inputs_to_button(form, input, submitter) {
+    const trimmed_value = input.trim()
+    if (trimmed_value.length > 0) {
+        form.children[submitter].removeAttribute("disabled")
+    } else {
+        form.children[submitter].setAttribute("disabled", "")
+    }
+}
 
 const prompt_field = prompt_form.children[0]
 
-prompt_field.addEventListener("input", () => {
-    const trimmed_value = prompt_field.value.trim()
-    if (trimmed_value.length > 0) {
-        prompt_form.children[1].removeAttribute("disabled")
-    } else {
-        prompt_form.children[1].setAttribute("disabled", "")
-    }
+prompt_field.addEventListener("input", () => bind_inputs_to_button(prompt_form, prompt_field.value, 1))
 
+// popup dialog -------------------------------------------------
+
+const popupDialog = document.getElementById("popup_dialog")
+
+
+const dialog_controllers = document.querySelectorAll(".dialog_controller")
+
+dialog_controllers.forEach(controller => {
+    controller.onclick = () => popupDialog.classList.toggle("show")
 })
 
+
+popupDialog[0].oninput = () => bind_inputs_to_button(popupDialog, popupDialog[0].value, 1)
+
+popupDialog.onsubmit = async e => {
+    e.preventDefault()
+
+    const session_name = popupDialog.children[0].value
+
+    const name_is_valid = session_name.trim().length > 0 
+
+    if (!name_is_valid){
+        alert("field must be completed")
+        return false
+    }
+
+    // get response if there are errors
+    const response = await fetch("/session/create", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({session_name})
+    })
+
+    
+    const data = await response.json()
+
+    if ( data.status == "failure") {
+        alert(`creation failed: ${data.error}`)
+    } else {
+        
+    }
+
+    popupDialog.children[0].value = ""
+    popupDialog.classList.toggle("show")
+
+}

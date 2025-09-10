@@ -1,4 +1,5 @@
 from ollama import chat
+from ..extensions import db
 
 class Chat_Service:
     """
@@ -6,10 +7,12 @@ class Chat_Service:
     """
     @staticmethod
     def stream_response(prompt: str):
-        return chat(
+        response=  chat(
             model="llama3.1:8b",
             messages=[{"role": "user", "content": prompt}],
             stream=True
         )
+
+        return response
     
     

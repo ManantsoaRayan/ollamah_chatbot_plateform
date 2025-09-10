@@ -1,6 +1,7 @@
 from flask import Flask
 from .extensions import db, migrate
 from .routes import register_blueprints
+from . import models
 
 def create_app(config_class="config.DevConfig"):
     app = Flask(__name__)

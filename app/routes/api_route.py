@@ -1,5 +1,5 @@
 from flask import Blueprint, request, Response, stream_with_context
-from ..services.ChatService import Chat_Service
+from ..services import Chat_Service
 import json
 
 api_bp = Blueprint("api", __name__)

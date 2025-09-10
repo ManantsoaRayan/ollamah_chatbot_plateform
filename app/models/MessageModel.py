@@ -1,5 +1,6 @@
 import enum
 from ..extensions import db
+from .SessionModel import Session
 
 class RoleEnum(enum.Enum):
     user = "user",
@@ -12,4 +13,4 @@ class Message(db.Model):
     
     session_id = db.Column(db.Integer, db.ForeignKey("session.id"), nullable=False)
 
-    session = db.relationship("session", backref="session")
+    session = db.relationship(Session, backref="session")

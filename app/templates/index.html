@@ -7,15 +7,32 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="column">
-        <div class="messages_container"></div>
-        <div class="prompt_container">
-            <form method="post" id="prompt_form">
-                <textarea name="prompt" id="prompt"></textarea>
-                <input type="submit" value="Send" disabled>
-            </form>
+    <div class="grid">
+        <nav class="navigation">
+            <div class="controller">
+                <h1>Charlote</h1>
+                <button type="button" class="btn dialog_controller"> New Chat </button>
+                Here is your previous chats
+            </div>
+            <div class="nav_items"></div>
+        </nav>
+        <div class="column">
+            <div class="messages_container"></div>
+            <div class="prompt_container">
+                <form method="post" id="prompt_form">
+                    <textarea name="prompt" id="prompt"></textarea>
+                    <input type="submit" value="Send" disabled>
+                </form>
+            </div>
         </div>
     </div>
+
+    <form method="post" id="popup_dialog">
+        <input type="text" name="name" placeholder="enter session name" required>
+        <input type="submit" value="create" disabled>
+        <button type="button" class="dialog_controller">cancel</button>
+    </form>
+    
 
     <script src="{{ url_for('static', filename='marked.esm.js') }}" type="module"></script>
     <script src="{{ url_for('static', filename='app.js') }}" type="module"></script>
