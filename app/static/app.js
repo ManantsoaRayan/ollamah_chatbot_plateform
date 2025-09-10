@@ -32,7 +32,7 @@ prompt_form.onsubmit = async (e) => {
 
     event_source.onmessage = (e) => {
         const text = JSON.parse(e.data)
-        current_outcomming_message.innerHTML += text
+        current_outcomming_message.textContent += text
     }
 
     event_source.addEventListener("done", () => {
@@ -40,6 +40,8 @@ prompt_form.onsubmit = async (e) => {
         current_outcomming_message = null
         event_source.close()
     })
+
+    prompt_form.children[0].value = ""
 }
 
 
